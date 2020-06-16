@@ -18,7 +18,7 @@ public class Contr {
 
     @RequestMapping(value = "/test/{num}", method = RequestMethod.GET)
     @ResponseBody
-    public String Test(@PathVariable("num") int num) {
+    public String test(@PathVariable("num") int num) {
 //        int num = 1001;
         try {
             bookService.transOpe(num);
@@ -28,6 +28,12 @@ public class Contr {
             return "error!";
         }
         return "success!";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/testlist", method = RequestMethod.GET)
+    public String testlist() {
+        return bookService.forlist();
     }
 
 }

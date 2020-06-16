@@ -30,6 +30,18 @@
       #{detail,jdbcType=VARCHAR})
   </insert>
 
+
+  <insert id="insertforlist" parameterType="java.util.List">
+    insert into book(book_id, name, number, detail)
+    values
+      <foreach collection="list" item="item" index="index" separator=",">
+        (
+        #{item.bookId,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR}, #{item.number,jdbcType=INTEGER},
+        #{item.detail,jdbcType=VARCHAR}
+        )
+      </foreach>
+  </insert>
+
   <insert id="insertSelective" parameterType="com.trans.domain.Book">
     insert into book
     <trim prefix="(" suffix=")" suffixOverrides=",">

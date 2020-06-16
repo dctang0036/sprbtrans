@@ -9,4 +9,10 @@ public interface BookService  {
      */
     String transOpe(int num);
 
+    /**
+     * mybatis插入list
+     * @return
+     */
+    String forlist();
+
 }

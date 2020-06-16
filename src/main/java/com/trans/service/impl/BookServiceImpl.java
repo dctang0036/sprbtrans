@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class BookServiceImpl implements BookService  {
 
@@ -43,5 +46,19 @@ public class BookServiceImpl implements BookService  {
 
 
         return book1.toString();
+    }
+
+    @Override
+    @Transactional
+    public String forlist() {
+        Book book1 = new Book((long)1015, "唐诗三百首", 3, "hhhhh");
+        Book book2 = new Book((long)1016, "宋词", 4, "hhhhdddh");
+
+        List<Book> bookList = new ArrayList<>();
+        bookList.add(book1);
+        bookList.add(book2);
+
+        int n = bookMapper.insertforlist(bookList);
+        return "插入数据量: " + n;
     }
 }
