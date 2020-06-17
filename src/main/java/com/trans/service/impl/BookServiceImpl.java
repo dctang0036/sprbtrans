@@ -18,7 +18,7 @@ public class BookServiceImpl implements BookService  {
     private BookMapper bookMapper;
 
     @Override
-    @Transactional(rollbackFor = Exception.class, timeout = 1 )
+    @Transactional(value = "transactionManager", rollbackFor = Exception.class, timeout = 5 )
     public String transOpe(int num) {
         // 查询实体类别
         Book book = bookMapper.selectByPrimaryKey((long)num);
@@ -30,12 +30,11 @@ public class BookServiceImpl implements BookService  {
         book1.setDetail(book.getDetail());
         bookMapper.insert(book1);
 
-        try {
+        /*try {
             Thread.sleep(10000);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
+        }*/
 
         Book book2 = new Book();
         book2.setBookId(book1.getBookId() + 1);
@@ -44,12 +43,11 @@ public class BookServiceImpl implements BookService  {
         book2.setDetail(book.getDetail());
         bookMapper.insert(book2);
 
-
         return book1.toString();
     }
 
     @Override
-    @Transactional
+    @Transactional(value = "transactionManager")
     public String forlist() {
         Book book1 = new Book((long)1015, "唐诗三百首", 3, "hhhhh");
         Book book2 = new Book((long)1016, "宋词", 4, "hhhhdddh");
