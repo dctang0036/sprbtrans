@@ -1,5 +1,6 @@
 package com.trans.config;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
@@ -9,6 +10,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -19,6 +21,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 @Configuration
 //扫描 Mapper 接口并容器管理
@@ -36,10 +39,52 @@ public class DruidConfiguration {
      */
     @Bean
     @Primary
-    @ConfigurationProperties("spring.datasource")
+    @ConfigurationProperties("spring.datasource.druid")
     public DataSource dataSource() {
         return DruidDataSourceBuilder.create().build();
     }
+
+    /*@Value("${spring.datasource.url}")
+    private String url;
+
+    @Value("${spring.datasource.username}")
+    private String user;
+
+    @Value("${spring.datasource.password}")
+    private String password;
+
+    @Value("${spring.datasource.driver-class-name}")
+    private String drivername;
+
+    @Value("${spring.datasource.druid.initial-size}")
+    private Integer initialsize;
+
+    @Value("${spring.datasource.druid.min-idle}")
+    private Integer minIdle;
+
+    @Value("${spring.datasource.druid.max-active}")
+    private Integer maxActive;
+
+    @Bean(name = "dataSource")
+    @Primary
+    public DataSource dataSource() {
+        DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setDriverClassName(drivername);
+        dataSource.setUrl(url);
+        dataSource.setUsername(user);
+        dataSource.setPassword(password);
+
+        dataSource.setInitialSize(initialsize);
+        dataSource.setMaxActive(maxActive);
+        dataSource.setMinIdle(minIdle);
+
+        try {
+            dataSource.setFilters("stat");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return dataSource;
+    }*/
 
     /**
      * 声明事务
