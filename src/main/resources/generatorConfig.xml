@@ -19,19 +19,42 @@
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://127.0.0.2:3306/booksystem"
-                        userId="${spring.datasource.username}"
-                        password="${spring.datasource.password}">
+                        userId="${spring.datasource.master.username}"
+                        password="${spring.datasource.master.password}">
         </jdbcConnection>
 
         <!--实体类也不用提前，建立，会自动根据数据库生成，对应数据库中字段-->
-        <javaModelGenerator targetPackage="com.trans.domain" targetProject="src/main/java"/>
+        <javaModelGenerator targetPackage="com.trans.domain.master" targetProject="src/main/java"/>
         <!--映射的mapper.xml文件-->
-        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources"/>
+        <sqlMapGenerator targetPackage="mapper.master" targetProject="src/main/resources"/>
         <!--映射文件，目标不必提前生成，会自动生成-->
-        <javaClientGenerator targetPackage="com.trans.dao" targetProject="src/main/java" type="XMLMAPPER"/>
+        <javaClientGenerator targetPackage="com.trans.dao.master" targetProject="src/main/java" type="XMLMAPPER"/>
 
         <!--输入表明，表名不用对应实体，会自动判断-->
         <table tableName="book"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false">
+        </table>
+
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.2:3306/example"
+                        userId="${spring.datasource.slave.username}"
+                        password="${spring.datasource.slave.password}">
+        </jdbcConnection>
+
+        <!--&lt;!&ndash;实体类也不用提前，建立，会自动根据数据库生成，对应数据库中字段&ndash;&gt;-->
+        <javaModelGenerator targetPackage="com.trans.domain.slave" targetProject="src/main/java"/>
+        <!--&lt;!&ndash;映射的mapper.xml文件&ndash;&gt;-->
+        <sqlMapGenerator targetPackage="mapper.slave" targetProject="src/main/resources"/>
+        <!--&lt;!&ndash;映射文件，目标不必提前生成，会自动生成&ndash;&gt;-->
+        <javaClientGenerator targetPackage="com.trans.dao.slave" targetProject="src/main/java" type="XMLMAPPER"/>
+
+        <!--&lt;!&ndash;输入表明，表名不用对应实体，会自动判断&ndash;&gt;-->
+        <table tableName="goods"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"

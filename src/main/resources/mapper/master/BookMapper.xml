@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.trans.dao.BookMapper">
-  <resultMap id="BaseResultMap" type="com.trans.domain.Book">
+<mapper namespace="com.trans.dao.master.BookMapper">
+  <resultMap id="BaseResultMap" type="com.trans.domain.master.Book">
     <id column="book_id" jdbcType="BIGINT" property="bookId" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="number" jdbcType="INTEGER" property="number" />
@@ -10,39 +10,37 @@
   <sql id="Base_Column_List">
     book_id, name, number, detail
   </sql>
-
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from book
     where book_id = #{bookId,jdbcType=BIGINT}
   </select>
-
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from book
     where book_id = #{bookId,jdbcType=BIGINT}
   </delete>
 
-  <insert id="insert" parameterType="com.trans.domain.Book">
+  <insert id="insert" parameterType="com.trans.domain.master.Book">
     insert into book (book_id, name, number, 
       detail)
     values (#{bookId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{number,jdbcType=INTEGER}, 
       #{detail,jdbcType=VARCHAR})
   </insert>
 
-
   <insert id="insertforlist" parameterType="java.util.List">
-    insert into book(book_id, name, number, detail)
+    insert into book (book_id, name, number, detail)
     values
-      <foreach collection="list" item="item" index="index" separator=",">
-        (
-        #{item.bookId,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR}, #{item.number,jdbcType=INTEGER},
-        #{item.detail,jdbcType=VARCHAR}
-        )
-      </foreach>
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.bookId,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR}, #{item.number,jdbcType=INTEGER},
+      #{item.detail,jdbcType=VARCHAR}
+      )
+    </foreach>
+
   </insert>
 
-  <insert id="insertSelective" parameterType="com.trans.domain.Book">
+  <insert id="insertSelective" parameterType="com.trans.domain.master.Book">
     insert into book
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="bookId != null">
@@ -73,7 +71,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.trans.domain.Book">
+  <update id="updateByPrimaryKeySelective" parameterType="com.trans.domain.master.Book">
     update book
     <set>
       <if test="name != null">
@@ -88,7 +86,7 @@
     </set>
     where book_id = #{bookId,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.trans.domain.Book">
+  <update id="updateByPrimaryKey" parameterType="com.trans.domain.master.Book">
     update book
     set name = #{name,jdbcType=VARCHAR},
       number = #{number,jdbcType=INTEGER},

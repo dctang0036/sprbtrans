@@ -1,8 +1,8 @@
 package com.trans.service.impl;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
-import com.trans.dao.BookMapper;
-import com.trans.domain.Book;
+import com.trans.dao.master.BookMapper;
+import com.trans.domain.master.Book;
 import com.trans.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class BookServiceImpl implements BookService  {
     private BookMapper bookMapper;
 
     @Override
-    @Transactional(value = "transactionManager", rollbackFor = Exception.class, timeout = 5 )
+    @Transactional(value = "masterTransactionManager", rollbackFor = Exception.class, timeout = 5 )
     public String transOpe(int num) {
         // 查询实体类别
         Book book = bookMapper.selectByPrimaryKey((long)num);
@@ -47,7 +47,7 @@ public class BookServiceImpl implements BookService  {
     }
 
     @Override
-    @Transactional(value = "transactionManager")
+    @Transactional(value = "masterTransactionManager")
     public String forlist() {
         Book book1 = new Book((long)1015, "唐诗三百首", 3, "hhhhh");
         Book book2 = new Book((long)1016, "宋词", 4, "hhhhdddh");

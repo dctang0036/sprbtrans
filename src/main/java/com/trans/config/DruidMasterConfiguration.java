@@ -4,8 +4,10 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,27 +21,28 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
 @Configuration
 //扫描 Mapper 接口并容器管理
-@MapperScan(basePackages = DruidConfiguration.PACKAGE, sqlSessionFactoryRef = "sqlSessionFactory")
-public class DruidConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(DruidConfiguration.class);
+@MapperScan(basePackages = DruidMasterConfiguration.PACKAGE, sqlSessionTemplateRef = "masterSqlSessionTemplate")
+public class DruidMasterConfiguration {
+    private static final Logger logger = LoggerFactory.getLogger(DruidMasterConfiguration.class);
 
     // 精确到 master 目录，以便跟其他数据源隔离
-    static final String PACKAGE = "com.trans.domain";
-    static final String MAPPER_LOCATION = "classpath:mapper/*.xml";
+    static final String PACKAGE = "com.trans.dao.master";
+    static final String MAPPER_LOCATION = "classpath:mapper/master/*.xml";
 
     /**
      * 创建数据源
      * @return
      */
-    @Bean
+    @Bean(name = "masterDataSource")
+    @ConfigurationProperties(prefix = "spring.datasource.master")
     @Primary
-    @ConfigurationProperties("spring.datasource.druid")
     public DataSource dataSource() {
         return DruidDataSourceBuilder.create().build();
     }
@@ -87,10 +90,10 @@ public class DruidConfiguration {
     }*/
 
     /**
-     * 声明事务
+     * 声明事务transactionManager
      * @return
      */
-    @Bean(name = "transactionManager")
+    @Bean(name = "masterTransactionManager")
     @Primary
     public DataSourceTransactionManager transactionManager() {
         return new DataSourceTransactionManager(dataSource());
@@ -98,55 +101,32 @@ public class DruidConfiguration {
 
     /**
      * 声明SqlSession
-     * @param dataSource
+     * @param masterDataSource
      * @return
      * @throws Exception
      */
-    @Bean
+    @Bean(name = "masterSqlSessionFactory")
     @Primary
-    public SqlSessionFactory ds1SqlSessionFactory(@Qualifier("dataSource") DataSource dataSource)
+    public SqlSessionFactory ds1SqlSessionFactory(@Qualifier("masterDataSource") DataSource masterDataSource)
             throws Exception {
         final SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource);
-        sessionFactory.setTypeAliasesPackage("com.trans.domain");
+        sessionFactory.setDataSource(masterDataSource);
+        // sessionFactory.setTypeAliasesPackage("com.trans.domain.master");
         sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver()
-                .getResources(DruidConfiguration.MAPPER_LOCATION));
+                .getResources(DruidMasterConfiguration.MAPPER_LOCATION));
         return sessionFactory.getObject();
     }
 
-
-
-    /**
-     * 配置监控服务器
-     * @return 返回监控注册的servlet对象
-     * @author SimpleWu
-     */
-    @Bean
-    public ServletRegistrationBean statViewServlet() {
-        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
-        // 添加IP白名单
-        servletRegistrationBean.addInitParameter("allow", "127.0.0.1");
-        // 添加IP黑名单，当白名单和黑名单重复时，黑名单优先级更高
-        servletRegistrationBean.addInitParameter("deny", "");
-        // 添加控制台管理用户
-        servletRegistrationBean.addInitParameter("loginUsername", "admin");
-        servletRegistrationBean.addInitParameter("loginPassword", "123456");
-        // 是否能够重置数据
-        servletRegistrationBean.addInitParameter("resetEnable", "false");
-        return servletRegistrationBean;
+    @Bean(name = "masterSqlSessionTemplate")
+    @Primary
+    public SqlSessionTemplate masterSqlSessionTemplate(@Qualifier("masterSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
+        return new SqlSessionTemplate(sqlSessionFactory);
     }
 
-    /**
-     * 配置服务过滤器
-     * @return 返回过滤器配置对象
-     */
-    @Bean
-    public FilterRegistrationBean filterRegistrationBean() {
-        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());
-        // 添加过滤规则
-        filterRegistrationBean.addUrlPatterns("/*");
-        // 忽略过滤格式
-        filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,");
-        return filterRegistrationBean;
-    }
+    /*@Bean(name = "masterSqlSessionTemplate")
+    @Primary
+    public SqlSessionTemplate masterSqlSessionTemplate(@Qualifier("masterSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
+        return new SqlSessionTemplate(sqlSessionFactory);
+    }*/
+
 }

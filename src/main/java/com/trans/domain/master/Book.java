@@ -1,10 +1,12 @@
-package com.trans.domain;
+package com.trans.domain.master;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class Book {
     private Long bookId;
 
@@ -44,15 +46,5 @@ public class Book {
 
     public void setDetail(String detail) {
         this.detail = detail;
-    }
-
-    @Override
-    public String toString() {
-        return "Book{" +
-                "bookId=" + bookId +
-                ", name='" + name + '\'' +
-                ", number=" + number +
-                ", detail='" + detail + '\'' +
-                '}';
     }
 }
